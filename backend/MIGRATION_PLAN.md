@@ -5,7 +5,7 @@
 - 将 `F:\repo\AgentHub-main\AgentHub-main\app` 的后端能力迁移到当前后端仓库。
 - 保留当前仓库的分层结构：根目录承载应用入口与基础配置，`src/agents` 承载领域 Agent，预留 `src/routers`、`src/services`、`src/models`、`src/utils` 作为可扩展边界。
 - 迁移后支持演示模式（未配置外部密钥时不阻断 API），并保持源项目既有 API 契约。
-- 每个功能点独立提交；目标为 48 个规范化 commit。代码只保留必要的模块说明和关键业务注释。
+- 每个功能点独立提交；目标为 49 个规范化 commit。代码只保留必要的模块说明和关键业务注释。
 
 ## 目录映射
 
@@ -17,60 +17,60 @@
 | `app/agents/*.py` | `src/agents/*.py` | 五个领域 Agent，调整为当前仓库的包导入路径 |
 | `app/__init__.py`、`app/agents/__init__.py` | `src/__init__.py`、`src/agents/__init__.py` | 包初始化与公共导出 |
 
-## 48 个迁移 commit
+## 49 个开发 commit
 
 提交均采用 Conventional Commits 风格，完成一个功能点并通过对应检查后立即提交。
 
-1. `docs: add backend migration plan`：建立本计划书。
-2. `chore: prepare source package layout`：补齐 `src`/Agent 包入口和迁移约定。
-3. `feat(config): migrate model provider settings`：迁移 LLM、Ollama 配置。
-4. `feat(config): migrate marketplace credentials`：迁移 Amazon/TikTok 配置。
-5. `feat(config): migrate integration status helper`：迁移外部服务状态检查。
-6. `feat(llm): add provider routing`：加入统一异步 LLM 路由。
-7. `feat(llm): add ollama chat transport`：加入 Ollama 原生协议。
-8. `feat(llm): add openai compatible transport`：加入 OpenAI 兼容协议。
-9. `feat(llm): add demo fallback`：加入离线演示回退和异常文本。
-10. `feat(agent): migrate shared agent package`：建立 Agent 公共包导出。
-11. `feat(customer-service): add language detection`：迁移语言识别。
-12. `feat(customer-service): add intent classification`：迁移意图分类。
-13. `feat(customer-service): add escalation rules`：迁移升级判断。
-14. `feat(customer-service): add knowledge base search`：迁移 TF-IDF 知识库检索。
-15. `feat(customer-service): add order lookup`：迁移订单查询和订单号提取。
-16. `feat(customer-service): add response orchestration`：迁移客服主流程与多语言回退。
-17. `feat(customer-service): add service statistics`：迁移客服统计。
-18. `feat(listing): add product catalog`：迁移演示商品和关键词数据。
-19. `feat(listing): add template generation`：迁移模板 Listing 生成。
-20. `feat(listing): add llm generation`：迁移 LLM Listing 生成。
-21. `feat(listing): add seo scoring`：迁移 SEO 评分与问题列表。
-22. `feat(listing): add competitor mock analysis`：迁移竞品分析演示数据。
-23. `feat(listing): add product listing helper`：迁移商品列表接口数据。
-24. `feat(content): add video templates`：迁移短视频模板和格式定义。
-25. `feat(content): add template script generation`：迁移模板脚本生成。
-26. `feat(content): add llm script generation`：迁移 LLM 脚本生成。
-27. `feat(content): add live commerce scripts`：迁移直播话术生成。
-28. `feat(content): add content calendar`：迁移内容日历。
-29. `feat(content): add hashtag selection`：迁移标签选择与格式列表。
-30. `feat(competitor): add tracked products`：迁移竞品和自有商品数据。
-31. `feat(competitor): add market overview`：迁移市场概览。
-32. `feat(competitor): add live search`：迁移 Serper 搜索和演示回退。
-33. `feat(competitor): add pricing recommendations`：迁移动态定价建议。
-34. `feat(competitor): add daily briefing`：迁移每日简报和商品列表。
-35. `feat(supply): add inventory dataset`：迁移库存与销量数据。
-36. `feat(supply): add inventory overview`：迁移库存概览和告警。
-37. `feat(supply): add restock planning`：迁移补货计划。
-38. `feat(supply): add demand forecasting`：迁移需求预测。
-39. `feat(supply): add supply statistics`：迁移供应链 KPI。
-40. `feat(models): add request schemas`：迁移并集中请求模型。
-41. `feat(api): add application shell`：迁移 FastAPI 应用、CORS 和运行入口。
-42. `feat(api): add status and dashboard routes`：迁移状态与仪表盘接口。
-43. `feat(api): add customer service routes`：迁移客服接口。
-44. `feat(api): add listing and content routes`：迁移 Listing 与内容接口。
-45. `feat(api): add competitor routes`：迁移竞品接口。
-46. `feat(api): add supply chain routes`：迁移供应链接口。
-47. `test: verify migrated api workflows`：增加迁移后的冒烟验证与导入检查。
-48. `docs: document migrated backend usage`：补充 README、运行方式和 API 说明。
+1. `docs: 制定后端开发计划`：建立本计划书。
+2. `chore: 完善源码包目录结构`：补齐 `src` 和领域包入口。
+3. `feat(配置): 增加模型服务参数`：加入 LLM、Ollama 配置。
+4. `feat(配置): 增加电商平台凭证参数`：加入 Amazon/TikTok 配置。
+5. `feat(配置): 增加外部服务状态检查`：加入连接状态检查。
+6. `feat(模型): 增加模型服务路由`：加入模型提供方选择。
+7. `feat(模型): 支持 Ollama 对话协议`：加入 Ollama 原生协议。
+8. `feat(模型): 支持 OpenAI 兼容协议`：加入 OpenAI 兼容协议。
+9. `feat(模型): 增加离线演示降级`：加入离线回退和异常文本。
+10. `feat(智能体): 建立领域智能体公共包`：建立公共包导出。
+11. `docs: 统一开发阶段提交说明`：按中文规范更新计划中的提交信息。
+12. `feat(客服): 增加语言识别能力`：实现中英文识别。
+13. `feat(客服): 增加意图分类能力`：实现业务意图分类。
+14. `feat(客服): 增加人工升级规则`：实现敏感问题升级判断。
+15. `feat(客服): 增加知识库检索`：实现 TF-IDF 知识库检索。
+16. `feat(客服): 增加订单查询`：实现订单查询和订单号提取。
+17. `feat(客服): 完成消息处理编排`：实现客服主流程与多语言回退。
+18. `feat(客服): 增加服务统计`：提供客服指标。
+19. `feat(Listing): 建立商品与关键词库`：加入演示商品和关键词数据。
+20. `feat(Listing): 增加模板生成`：实现模板 Listing 生成。
+21. `feat(Listing): 增加智能生成`：实现 LLM Listing 生成。
+22. `feat(Listing): 增加 SEO 评分`：实现 SEO 评分与问题列表。
+23. `feat(Listing): 增加竞品样本分析`：提供竞品分析演示数据。
+24. `feat(Listing): 完成生成流程编排`：实现完整 Listing 生成和商品列表。
+25. `feat(内容): 建立短视频模板库`：加入视频模板和格式定义。
+26. `feat(内容): 增加模板脚本生成`：实现离线模板脚本。
+27. `feat(内容): 增加智能脚本生成`：实现 LLM 脚本生成。
+28. `feat(内容): 增加直播带货话术`：实现直播话术生成。
+29. `feat(内容): 增加内容排期`：实现内容日历。
+30. `feat(内容): 增加标签推荐`：实现标签选择与格式列表。
+31. `feat(竞品): 建立跟踪商品库`：加入竞品和自有商品数据。
+32. `feat(竞品): 增加市场概览`：实现价格和排名分析。
+33. `feat(竞品): 增加实时搜索`：实现 Serper 搜索和演示回退。
+34. `feat(竞品): 增加动态定价建议`：实现定价策略。
+35. `feat(竞品): 增加每日简报`：实现每日简报和商品列表。
+36. `feat(供应链): 建立库存数据集`：加入库存与销量数据。
+37. `feat(供应链): 增加库存概览`：实现库存概览和告警。
+38. `feat(供应链): 增加补货计划`：实现补货建议。
+39. `feat(供应链): 增加需求预测`：实现需求预测。
+40. `feat(供应链): 增加运营指标`：实现供应链 KPI。
+41. `feat(模型): 增加接口请求结构`：集中定义请求模型。
+42. `feat(接口): 建立服务应用入口`：配置 FastAPI、CORS 和运行入口。
+43. `feat(接口): 增加状态与看板接口`：实现状态与仪表盘 API。
+44. `feat(接口): 增加客服接口`：实现客服 API。
+45. `feat(接口): 增加 Listing 与内容接口`：实现 Listing 与内容 API。
+46. `feat(接口): 增加竞品接口`：实现竞品 API。
+47. `feat(接口): 增加供应链接口`：实现供应链 API。
+48. `test: 增加后端业务冒烟测试`：覆盖导入、核心函数和 API。
+49. `docs: 完善后端使用说明`：补充运行方式和 API 说明。
 
 ## 验证策略
 
-每个 Agent 完成后执行模块导入和核心函数的最小调用；API 路由完成后使用 FastAPI `TestClient` 验证状态码、关键字段和未知资源的错误响应。最终执行 `python -m compileall`、完整冒烟测试和 `git log` 检查，确认 48 个提交均存在且工作树干净。
-
+每个 Agent 完成后执行模块导入和核心函数的最小调用；API 路由完成后使用 FastAPI `TestClient` 验证状态码、关键字段和未知资源的错误响应。最终执行 `python -m compileall`、完整冒烟测试和 `git log` 检查，确认 49 个提交均存在且工作树干净。

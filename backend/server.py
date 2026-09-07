@@ -10,6 +10,7 @@ from src.services import customer_service
 from src.chains import supply_chain
 from src.models import ChatRequest
 from src.routers import listing_router
+from src.routers import content_router
 
 
 def create_app() -> FastAPI:
@@ -26,6 +27,7 @@ def create_app() -> FastAPI:
 
 app = create_app()
 app.include_router(listing_router.router)
+app.include_router(content_router.router)
 
 
 @app.get("/api/status")

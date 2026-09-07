@@ -88,3 +88,41 @@ def get_inventory_overview() -> dict:
         "total_inventory_value": round(total_value, 2),
         "alerts": sorted(alerts, key=lambda item: 0 if item["severity"] == "critical" else 1),
     }
+
+
+def generate_restock_plan(product_key: str) -> dict:
+    product = INVENTORY.get(product_key)
+    if not product:
+        return {"error": f"Product '{product_key}' not found"}
+    velocity = SALES_VELOCITY.get(product_key, {})
+    plan = {
+        "product": product["name"], "sku": product["sku"], "unit_cost": product["unit_cost"],
+        "moq": product["moq"], "lead_time_days": product["lead_time_days"], "orders": [],
+        "total_units": 0, "total_cost": 0,
+    }
+    for variant, stock in product["variants"].items():
+        speeds = velocity.get(variant, {"amazon": 0, "tiktok": 0})
+        daily = speeds["amazon"] + speeds["tiktok"]
+        current = stock["amazon_fba"] + stock["tiktok_warehouse"] + stock["in_transit"]
+        target = math.ceil(daily * 60)
+        gap = max(0, target - current)
+        if not gap:
+            continue
+        quantity = math.ceil(max(gap, product["moq"]) / 50) * 50
+        amazon_share = speeds["amazon"] / max(daily, 0.1)
+        days = current / max(daily, 0.1)
+        air = days < 20
+        order = {
+            "variant": variant, "current_stock": current, "in_transit": stock["in_transit"],
+            "target_stock": target, "gap": gap, "order_quantity": quantity,
+            "allocation": {"amazon_fba": round(quantity * amazon_share), "tiktok_warehouse": quantity - round(quantity * amazon_share)},
+            "cost": round(quantity * product["unit_cost"], 2),
+            "urgency": "urgent" if days < 14 else "normal",
+            "ship_method": "air" if air else "sea",
+            "estimated_arrival": (datetime.now() + timedelta(days=product["lead_time_days"] + (product["shipping_time_air"] if air else product["shipping_time_sea"]))).strftime("%Y-%m-%d"),
+        }
+        plan["orders"].append(order)
+        plan["total_units"] += quantity
+        plan["total_cost"] += order["cost"]
+    plan["total_cost"] = round(plan["total_cost"], 2)
+    return plan

@@ -81,3 +81,24 @@ async def get_market_overview(product_key: str) -> dict:
         "recommendation": _pricing_recommendation(product, competitors, analysis),
         "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
     }
+
+
+async def search_competitor_live(query: str) -> dict:
+    if not SERPER_API_KEY:
+        return {"results": [], "note": "Configure SERPER_API_KEY for live search"}
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://google.serper.dev/search",
+                headers={"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"},
+                json={"q": query, "num": 5},
+                timeout=10,
+            )
+            response.raise_for_status()
+            results = [
+                {"title": item.get("title", ""), "url": item.get("link", ""), "snippet": item.get("snippet", "")}
+                for item in response.json().get("organic", [])[:5]
+            ]
+            return {"results": results}
+    except Exception as exc:
+        return {"results": [], "error": str(exc)}

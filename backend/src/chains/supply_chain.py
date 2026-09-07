@@ -1,4 +1,4 @@
-"""Inventory, replenishment, and demand-forecasting agent."""
+"""库存、补货与需求预测链路。"""
 
 import math
 import random

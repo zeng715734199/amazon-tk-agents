@@ -1,4 +1,4 @@
-"""Multi-platform customer-service agent."""
+"""多平台智能客服服务。"""
 
 import random
 import re

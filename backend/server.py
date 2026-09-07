@@ -1,25 +1,25 @@
-import os
-from fastapi import FastAPI, HTTPException
+"""AgentHub FastAPI 应用入口。"""
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
 
+def create_app() -> FastAPI:
+    """创建并配置 FastAPI 应用实例。"""
+    application = FastAPI(title="跨境电商 Agent 平台", version="1.0.0")
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # 演示环境允许跨域，生产环境应配置白名单。
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    return application
 
-# 创建应用对象，标题和版本会出现在 OpenAPI 文档中。
-app = FastAPI(title="跨境电商Agent平台", version="1.0.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # 对所有来源开放，生产环境应改成白名单域名。
-    allow_methods=["*"],  # 允许 GET、POST 等所有方法。
-    allow_headers=["*"],  # 接受所有请求头，例如 Content-Type。
-)
-
-# 平台状态接口。
-@app.get("/api/status")
-def status():
-    return True
+app = create_app()
 
 
 if __name__ == "__main__":
-  uvicorn.run(app, host="0.0.0.0", port=8081, log_level="warning")
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8081, log_level="warning")

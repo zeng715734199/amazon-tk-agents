@@ -1,0 +1,7 @@
+# AgentHub 后端运行依赖（Python 3.10+）
+fastapi>=0.100,<1
+uvicorn[standard]>=0.20,<1
+httpx>=0.24,<1
+scikit-learn>=1.2,<2
+numpy>=1.23,<3
+pydantic>=2,<3

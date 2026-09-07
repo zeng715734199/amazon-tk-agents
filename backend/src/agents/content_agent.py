@@ -77,3 +77,23 @@ LIVE_TEMPLATE = {
     "engagement": ["Type YES if you want this!", "Tag a friend who'd love this!", "Comment your size or color!", "Flash deal for 60 seconds! ⏰"],
     "closing": ["Thank you for watching!", "Your cart discount expires soon!", "See you next time! 💕"],
 }
+
+
+def _template_script(product_name: str, features: list[str], template: dict) -> str:
+    lines = []
+    for section in template["structure"]:
+        lines.append(f"**{section['section']}**")
+        name = section["section"].lower()
+        if "hook" in name:
+            lines.append(f'[Camera on package] "Wait until you see the {product_name}!"')
+        elif "feature" in name or "look" in name:
+            lines.extend(f'[Close-up] "{feature} — and it actually works."' for feature in features[:3])
+        elif "test" in name or "pro" in name:
+            feature = features[0] if features else "the headline feature"
+            lines.append(f'[Demo] "See? {feature} — exactly as advertised."')
+        elif "cta" in name:
+            lines.append('"Tap the shop button to check it out!"')
+        else:
+            lines.append(f"[{section['content']}]")
+        lines.append("")
+    return "\n".join(lines)

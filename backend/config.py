@@ -12,3 +12,14 @@ LLM_MODEL = os.getenv(
     "LLM_MODEL",
     OLLAMA_MODEL if LLM_PROVIDER in {"ollama", "local"} else "gpt-4o-mini",
 )
+
+AMAZON_SELLER_ID = os.getenv("AMAZON_SELLER_ID", "")
+AMAZON_ACCESS_KEY = os.getenv("AMAZON_ACCESS_KEY", "")
+AMAZON_SECRET_KEY = os.getenv("AMAZON_SECRET_KEY", "")
+AMAZON_REFRESH_TOKEN = os.getenv("AMAZON_REFRESH_TOKEN", "")
+AMAZON_MARKETPLACE = os.getenv("AMAZON_MARKETPLACE", "ATVPDKIKX0DER")
+
+TIKTOK_APP_KEY = os.getenv("TIKTOK_APP_KEY", "")
+TIKTOK_APP_SECRET = os.getenv("TIKTOK_APP_SECRET", "")
+TIKTOK_ACCESS_TOKEN = os.getenv("TIKTOK_ACCESS_TOKEN", "")
+TIKTOK_SHOP_ID = os.getenv("TIKTOK_SHOP_ID", "")

@@ -201,3 +201,25 @@ async def generate_content_calendar(products: list[dict], days: int = 7) -> dict
         "total_days": days,
         "formats_used": list({item["format"] for item in calendar}),
     }
+
+
+def _select_hashtags(product_name: str, features: list[str]) -> list[str]:
+    tags = HASHTAG_DB["general"][:3] + HASHTAG_DB["shopping"][:3]
+    searchable = f"{product_name} {' '.join(features)}".lower()
+    category_terms = {
+        "electronics": ["earbud", "audio", "bluetooth", "lamp", "usb"],
+        "fitness": ["yoga", "fitness", "workout", "exercise"],
+        "home": ["home", "desk", "lamp", "decor"],
+    }
+    for category, terms in category_terms.items():
+        if any(term in searchable for term in terms):
+            tags.extend(HASHTAG_DB[category][:3])
+    tags.append(f"#{product_name.replace(' ', '')}")
+    return list(dict.fromkeys(tags))[:12]
+
+
+def get_format_list() -> list[dict]:
+    return [
+        {"key": key, "name": value["name"], "duration": value["duration"], "steps": len(value["structure"])}
+        for key, value in VIDEO_TEMPLATES.items()
+    ]

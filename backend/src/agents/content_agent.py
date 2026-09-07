@@ -97,3 +97,50 @@ def _template_script(product_name: str, features: list[str], template: dict) -> 
             lines.append(f"[{section['content']}]")
         lines.append("")
     return "\n".join(lines)
+
+
+async def _llm_script(product_name: str, features: list[str], template: dict, language: str) -> str:
+    sections = "\n".join(f"- {item['section']}: {item['content']}" for item in template["structure"])
+    prompt = f"""Write a TikTok video script for {product_name}.
+Features: {', '.join(features[:4])}
+Format: {template['name']} ({template['duration']})
+Language: {language}
+
+Follow this structure:
+{sections}
+
+Include spoken lines and visual directions in brackets."""
+    return await llm_chat([
+        {"role": "system", "content": "You create authentic TikTok product videos that drive sales."},
+        {"role": "user", "content": prompt},
+    ])
+
+
+async def generate_video_script(
+    product_name: str,
+    product_features: list[str],
+    format_type: str = "unboxing",
+    language: str = "en",
+) -> dict:
+    started_at = time.perf_counter()
+    template = VIDEO_TEMPLATES.get(format_type, VIDEO_TEMPLATES["unboxing"])
+    steps = [{"type": "analyze", "detail": f"Format: {template['name']}, Duration: {template['duration']}"}]
+    script = await _llm_script(product_name, product_features, template, language)
+    if "[Demo Mode" in script or "[LLM Error" in script:
+        script = _template_script(product_name, product_features, template)
+        steps.append({"type": "template", "detail": "Generated from template"})
+    else:
+        steps.append({"type": "llm", "detail": "Generated via LLM"})
+
+    hashtags = _select_hashtags(product_name, product_features)
+    steps.append({"type": "hashtags", "detail": f"Selected {len(hashtags)} optimized hashtags"})
+    trends = [item for item in TRENDING_TOPICS if item["format"] == format_type or item["relevance"] == "high"][:4]
+    return {
+        "script": script,
+        "template": template,
+        "hashtags": hashtags,
+        "trending": trends,
+        "format": format_type,
+        "steps": steps,
+        "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
+    }

@@ -1,1 +1,1 @@
-"""AgentHub backend application package."""
+"""AgentHub 后端应用包。"""

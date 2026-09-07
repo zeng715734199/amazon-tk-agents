@@ -1,4 +1,4 @@
-"""TikTok content and live-commerce agent."""
+"""TikTok 内容与直播带货智能体。"""
 
 import random
 import time

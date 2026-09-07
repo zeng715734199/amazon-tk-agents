@@ -1,4 +1,4 @@
-"""Competitor monitoring and dynamic-pricing agent."""
+"""竞品监控与动态定价智能体。"""
 
 import time
 from datetime import datetime

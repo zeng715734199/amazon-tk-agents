@@ -1,4 +1,4 @@
-"""Environment-driven backend configuration."""
+"""基于环境变量的后端配置。"""
 
 import os
 
@@ -31,7 +31,7 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")
 
 
 def get_connection_status() -> dict[str, bool]:
-    """Report whether each external integration has required configuration."""
+    """检查各外部服务是否填写必要配置。"""
     return {
         "llm": LLM_PROVIDER in {"ollama", "local"} or bool(LLM_API_KEY),
         "amazon": bool(AMAZON_ACCESS_KEY and AMAZON_SECRET_KEY),

@@ -1,4 +1,4 @@
-"""Unified asynchronous chat interface for local and remote models."""
+"""本地与远端模型的统一异步对话接口。"""
 
 from collections.abc import Sequence
 from typing import Any
@@ -71,7 +71,7 @@ def _demo_response(messages: Sequence[Message]) -> str:
 async def llm_chat(
     messages: Sequence[Message], temperature: float = 0.7, max_tokens: int = 2000
 ) -> str:
-    """Route a chat request and degrade gracefully when a provider is unavailable."""
+    """路由对话请求，并在服务不可用时平滑降级。"""
     if not _uses_ollama() and not LLM_API_KEY:
         return _demo_response(messages)
 

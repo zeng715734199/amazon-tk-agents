@@ -1,4 +1,4 @@
-"""Domain agents for the AgentHub backend."""
+"""AgentHub 领域智能体包。"""
 
 __all__ = [
     "competitor_agent",

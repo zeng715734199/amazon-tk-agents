@@ -1,4 +1,4 @@
-"""Product-listing generation agent."""
+"""商品 Listing 生成智能体。"""
 
 import random
 import re

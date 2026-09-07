@@ -21,7 +21,7 @@ _kb_matrix = _kb_vectorizer.fit_transform(_kb_texts)
 
 
 def detect_language(text: str) -> str:
-    """Detect Chinese with a lightweight character-ratio rule."""
+    """根据中文字符比例进行轻量级语言识别。"""
     chinese_chars = len(re.findall(r"[\u4e00-\u9fff]", text))
     return "zh" if chinese_chars > len(text) * 0.15 else "en"
 
@@ -102,7 +102,7 @@ async def handle_customer_message(
     conversation_history: list | None = None,
     platform: str = "tiktok",
 ) -> dict:
-    """Run classification, order lookup, retrieval, and response selection."""
+    """完成分类、订单查询、知识检索和回复选择。"""
     started_at = time.perf_counter()
     language = detect_language(message)
     intent = classify_intent(message)

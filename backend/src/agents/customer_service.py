@@ -36,6 +36,12 @@ KB_ENTRIES = [
 _kb_texts = [f"{entry['q']} {entry['a']}" for entry in KB_ENTRIES]
 _kb_vectorizer = TfidfVectorizer(ngram_range=(1, 2), stop_words="english")
 _kb_matrix = _kb_vectorizer.fit_transform(_kb_texts)
+DEMO_ORDERS = {
+    "ORD-20250301-001": {"status": "delivered", "items": ["Wireless Earbuds Pro"], "tracking": "UPS1Z999AA10123456784", "shipped_date": "2025-03-03", "delivered_date": "2025-03-10", "platform": "amazon"},
+    "ORD-20250305-002": {"status": "in_transit", "items": ["Phone Case Ultra Slim", "Screen Protector 2-Pack"], "tracking": "USPS9400111899223100001", "shipped_date": "2025-03-07", "estimated_delivery": "2025-03-18", "platform": "tiktok"},
+    "ORD-20250310-003": {"status": "processing", "items": ["LED Desk Lamp Smart"], "tracking": None, "estimated_ship": "2025-03-12", "platform": "amazon"},
+    "ORD-20250312-004": {"status": "returned", "items": ["Yoga Mat Premium"], "tracking": "UPS1Z999AA10123456799", "return_reason": "Wrong size", "refund_status": "processed", "platform": "tiktok"},
+}
 
 
 def detect_language(text: str) -> str:
@@ -70,3 +76,18 @@ def search_kb(query: str, top_k: int = 3) -> list[dict]:
                 "score": round(float(scores[index]), 4),
             })
     return results
+
+
+def lookup_order(order_id: str) -> dict:
+    order = DEMO_ORDERS.get(order_id)
+    if order:
+        return {"found": True, **order}
+    return {"found": False, "message": f"Order {order_id} not found"}
+
+
+def extract_order_id(text: str) -> str | None:
+    match = re.search(r"ORD-\d{8}-\d{3}", text.upper())
+    if match:
+        return match.group()
+    match = re.search(r"#?(\d{6,})", text)
+    return f"ORD-{match.group(1)}" if match else None

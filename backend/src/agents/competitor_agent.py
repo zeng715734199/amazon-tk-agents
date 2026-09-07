@@ -28,3 +28,56 @@ OUR_PRODUCTS = {
     "yoga_mat": {"name": "ZenFlex Premium", "price": 29.99, "cost": 8.20, "min_price": 19.99, "rating": 4.3, "reviews": 680, "bsr": 380, "monthly_sales": 950},
     "desk_lamp": {"name": "LumiPro Smart", "price": 34.99, "cost": 11.80, "min_price": 24.99, "rating": 4.5, "reviews": 420, "bsr": 550, "monthly_sales": 620},
 }
+
+
+async def get_market_overview(product_key: str) -> dict:
+    started_at = time.perf_counter()
+    competitors = TRACKED_COMPETITORS.get(product_key, [])
+    product = OUR_PRODUCTS.get(product_key, {})
+    if not competitors:
+        return {"error": f"No tracked competitors for '{product_key}'"}
+
+    prices = [item["current_price"] for item in competitors]
+    raw_score = 100 - (product["price"] - min(prices)) / (max(prices) - min(prices) + 0.01) * 100
+    analysis = {
+        "our_price": product["price"],
+        "market_avg": round(sum(prices) / len(prices), 2),
+        "market_min": min(prices),
+        "market_max": max(prices),
+        "our_position": "above_avg" if product["price"] > sum(prices) / len(prices) else "below_avg",
+        "price_competitiveness": round(max(0, min(100, raw_score))),
+    }
+
+    alerts = []
+    for competitor in competitors:
+        history = competitor["price_history"]
+        if len(history) >= 2 and history[-1] != history[-2]:
+            change = history[-1] - history[-2]
+            percent = round(change / history[-2] * 100, 1)
+            alerts.append({
+                "type": "price_change",
+                "severity": "high" if abs(percent) > 10 else "medium",
+                "competitor": competitor["name"],
+                "detail": f"Price {'dropped' if change < 0 else 'increased'} by USD {abs(change):.2f} ({percent:+.1f}%)",
+                "old_price": history[-2],
+                "new_price": history[-1],
+            })
+        bsr_history = competitor.get("bsr_history")
+        if bsr_history and len(bsr_history) >= 3:
+            trend = bsr_history[-1] - bsr_history[-3]
+            if abs(trend) > 20:
+                alerts.append({
+                    "type": "bsr_change",
+                    "severity": "medium",
+                    "competitor": competitor["name"],
+                    "detail": f"BSR {'improved' if trend < 0 else 'declined'} by {abs(trend)} positions (7d)",
+                })
+
+    return {
+        "product": product,
+        "competitors": competitors,
+        "price_analysis": analysis,
+        "alerts": alerts,
+        "recommendation": _pricing_recommendation(product, competitors, analysis),
+        "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
+    }

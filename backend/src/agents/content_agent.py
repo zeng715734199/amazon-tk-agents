@@ -144,3 +144,33 @@ async def generate_video_script(
         "steps": steps,
         "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
     }
+
+
+async def generate_live_script(
+    product_name: str,
+    product_features: list[str],
+    price: float,
+    promo_price: float | None = None,
+) -> dict:
+    started_at = time.perf_counter()
+    discount = round((1 - promo_price / price) * 100) if promo_price else 0
+    offer = f"today only USD {promo_price}, {discount}% off!" if promo_price else "we have a special deal!"
+    sections = {
+        "opening": random.choice(LIVE_TEMPLATE["opening"]),
+        "product_intro": [
+            random.choice(LIVE_TEMPLATE["product_intro"]),
+            f"This is the {product_name}. Let me show you why I love it.",
+            f"Features: {', '.join(product_features[:3])}",
+            f"Normally USD {price}, but {offer}",
+        ],
+        "engagement_hooks": LIVE_TEMPLATE["engagement"],
+        "closing": random.choice(LIVE_TEMPLATE["closing"]),
+        "key_numbers": {
+            "original_price": price,
+            "promo_price": promo_price,
+            "discount_pct": discount,
+            "suggested_duration": "45-60 min",
+            "products_to_show": 5,
+        },
+    }
+    return {"sections": sections, "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2)}

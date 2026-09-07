@@ -23,3 +23,20 @@ TIKTOK_APP_KEY = os.getenv("TIKTOK_APP_KEY", "")
 TIKTOK_APP_SECRET = os.getenv("TIKTOK_APP_SECRET", "")
 TIKTOK_ACCESS_TOKEN = os.getenv("TIKTOK_ACCESS_TOKEN", "")
 TIKTOK_SHOP_ID = os.getenv("TIKTOK_SHOP_ID", "")
+
+SERPER_API_KEY = os.getenv("SERPER_API_KEY", "")
+ERP_API_URL = os.getenv("ERP_API_URL", "")
+ERP_API_KEY = os.getenv("ERP_API_KEY", "")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")
+
+
+def get_connection_status() -> dict[str, bool]:
+    """Report whether each external integration has required configuration."""
+    return {
+        "llm": LLM_PROVIDER in {"ollama", "local"} or bool(LLM_API_KEY),
+        "amazon": bool(AMAZON_ACCESS_KEY and AMAZON_SECRET_KEY),
+        "tiktok": bool(TIKTOK_APP_KEY and TIKTOK_ACCESS_TOKEN),
+        "serper": bool(SERPER_API_KEY),
+        "erp": bool(ERP_API_URL and ERP_API_KEY),
+        "webhook": bool(WEBHOOK_URL),
+    }

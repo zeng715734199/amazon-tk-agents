@@ -5,7 +5,7 @@
 - 将 `F:\repo\AgentHub-main\AgentHub-main\app` 的后端能力迁移到当前后端仓库。
 - 保留当前仓库的分层结构：根目录承载应用入口与基础配置，`src/agents` 承载领域 Agent，预留 `src/routers`、`src/services`、`src/models`、`src/utils` 作为可扩展边界。
 - 迁移后支持演示模式（未配置外部密钥时不阻断 API），并保持源项目既有 API 契约。
-- 每个功能点独立提交；目标为 49 个规范化 commit。代码只保留必要的模块说明和关键业务注释。
+- 每个功能点独立提交；目标为 59 个规范化 commit。代码只保留必要的模块说明和关键业务注释，且所有代码注释统一使用中文。
 
 ## 目录映射
 
@@ -13,11 +13,14 @@
 | --- | --- | --- |
 | `app/config.py` | `config.py` | 保留环境变量配置与连接状态检查 |
 | `app/llm.py` | `llm.py` | 保留 Ollama/OpenAI 兼容调用与演示回退 |
-| `app/server.py` | `server.py` + `src/models` | 入口、请求模型和 API 路由；按功能拆分提交 |
-| `app/agents/*.py` | `src/agents/*.py` | 五个领域 Agent，调整为当前仓库的包导入路径 |
+| `app/server.py` | `server.py` + `src/models` + `src/routers` | 入口、请求模型和领域 API 路由 |
+| `app/agents/*_agent.py` | `src/agents/*_agent.py` | Listing、内容和竞品 Agent |
+| `app/agents/customer_service.py` | `src/services/customer_service.py` | 客服领域服务 |
+| `app/agents/supply_chain.py` | `src/chains/supply_chain.py` | 供应链计算链路 |
+| 各模块演示常量 | `src/mock/*_mock.py` | 商品、订单、模板、竞品和库存演示数据 |
 | `app/__init__.py`、`app/agents/__init__.py` | `src/__init__.py`、`src/agents/__init__.py` | 包初始化与公共导出 |
 
-## 49 个开发 commit
+## 59 个开发 commit
 
 提交均采用 Conventional Commits 风格，完成一个功能点并通过对应检查后立即提交。
 
@@ -61,16 +64,26 @@
 38. `feat(供应链): 增加补货计划`：实现补货建议。
 39. `feat(供应链): 增加需求预测`：实现需求预测。
 40. `feat(供应链): 增加运营指标`：实现供应链 KPI。
-41. `feat(模型): 增加接口请求结构`：集中定义请求模型。
-42. `feat(接口): 建立服务应用入口`：配置 FastAPI、CORS 和运行入口。
-43. `feat(接口): 增加状态与看板接口`：实现状态与仪表盘 API。
-44. `feat(接口): 增加客服接口`：实现客服 API。
-45. `feat(接口): 增加 Listing 与内容接口`：实现 Listing 与内容 API。
-46. `feat(接口): 增加竞品接口`：实现竞品 API。
-47. `feat(接口): 增加供应链接口`：实现供应链 API。
-48. `test: 增加后端业务冒烟测试`：覆盖导入、核心函数和 API。
-49. `docs: 完善后端使用说明`：补充运行方式和 API 说明。
+41. `refactor: 按职责整理服务与链路模块`：将客服和供应链代码放入职责目录。
+42. `docs: 按模块职责细化开发计划`：同步目录和提交规划。
+43. `refactor: 规范领域模块命名`：按 agent、service、chain 后缀整理模块名。
+44. `refactor(客服): 独立演示知识与订单数据`：将客服演示数据放入 `src/mock`。
+45. `refactor(Listing): 独立商品与关键词数据`：将 Listing 演示数据放入 `src/mock`。
+46. `refactor(内容): 独立模板与趋势数据`：将内容演示数据放入 `src/mock`。
+47. `refactor(竞品): 独立商品跟踪数据`：将竞品演示数据放入 `src/mock`。
+48. `refactor(供应链): 独立库存与销量数据`：将供应链演示数据放入 `src/mock`。
+49. `style: 统一源码中文注释`：统一模块说明、函数说明和行内注释语言。
+50. `feat(模型): 增加接口请求模型`：集中定义请求模型。
+51. `feat(接口): 建立应用装配入口`：实现 FastAPI 应用、CORS 和路由装配。
+52. `feat(接口): 增加状态与看板路由`：实现状态与仪表盘接口。
+53. `feat(接口): 增加客服路由`：实现客服接口。
+54. `feat(接口): 增加 Listing 路由`：实现 Listing 接口。
+55. `feat(接口): 增加内容路由`：实现内容接口。
+56. `feat(接口): 增加竞品路由`：实现竞品接口。
+57. `feat(接口): 增加供应链路由`：实现供应链接口。
+58. `test: 覆盖后端核心流程`：增加领域与 API 冒烟验证。
+59. `docs: 完善后端使用说明`：补充运行方式和 API 说明。
 
 ## 验证策略
 
-每个 Agent 完成后执行模块导入和核心函数的最小调用；API 路由完成后使用 FastAPI `TestClient` 验证状态码、关键字段和未知资源的错误响应。最终执行 `python -m compileall`、完整冒烟测试和 `git log` 检查，确认 49 个提交均存在且工作树干净。
+每个领域模块完成后执行模块导入和核心函数的最小调用；API 路由完成后使用 FastAPI `TestClient` 验证状态码、关键字段和未知资源的错误响应。最终执行 `python -m compileall`、完整冒烟测试和 `git log` 检查，确认 59 个提交均存在且工作树干净。

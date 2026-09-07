@@ -14,6 +14,10 @@ INTENT_KEYWORDS = {
     "logistics": ["shipping", "delivery", "track", "where", "when arrive", "customs", "物流", "发货", "到了", "快递"],
     "complaint": ["damaged", "broken", "wrong", "bad", "terrible", "never", "scam", "fake", "差", "坏了", "投诉", "骗"],
 }
+ESCALATION_KEYWORDS = [
+    "lawyer", "legal", "sue", "report", "bbb", "fraud", "scam",
+    "fda", "government", "律师", "投诉", "举报", "消协",
+]
 
 
 def detect_language(text: str) -> str:
@@ -30,3 +34,8 @@ def classify_intent(text: str) -> str:
     }
     best = max(scores, key=scores.get)
     return best if scores[best] else "general"
+
+
+def check_escalation(text: str) -> bool:
+    text = text.lower()
+    return any(keyword in text for keyword in ESCALATION_KEYWORDS)

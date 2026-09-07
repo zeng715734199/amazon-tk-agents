@@ -174,3 +174,30 @@ async def generate_live_script(
         },
     }
     return {"sections": sections, "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2)}
+
+
+async def generate_content_calendar(products: list[dict], days: int = 7) -> dict:
+    calendar = []
+    formats = list(VIDEO_TEMPLATES)
+    base_date = datetime.now()
+    for index in range(days):
+        date = base_date + timedelta(days=index)
+        product = products[index % len(products)] if products else {"name": "Featured Product"}
+        format_key = formats[index % len(formats)]
+        template = VIDEO_TEMPLATES[format_key]
+        calendar.append({
+            "date": date.strftime("%Y-%m-%d"),
+            "day": date.strftime("%A"),
+            "product": product.get("name", "TBD"),
+            "format": format_key,
+            "format_name": template["name"],
+            "duration": template["duration"],
+            "post_time": random.choice(["10:00 AM EST", "2:00 PM EST", "6:00 PM EST", "8:00 PM EST"]),
+            "hashtag_set": _select_hashtags(product.get("name", ""), product.get("features", []))[:5],
+            "notes": f"Focus on {random.choice(['hook optimization', 'engagement CTA', 'product close-ups', 'lifestyle angle', 'trending sound'])}",
+        })
+    return {
+        "calendar": calendar,
+        "total_days": days,
+        "formats_used": list({item["format"] for item in calendar}),
+    }

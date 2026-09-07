@@ -156,3 +156,44 @@ def _mock_competitor_analysis(category: str) -> list[dict]:
         }
         for rank, label in enumerate(labels, 1)
     ]
+
+
+async def generate_listing(product_key: str, platform: str = "amazon", language: str = "en") -> dict:
+    started_at = time.perf_counter()
+    product = DEMO_PRODUCTS.get(product_key)
+    if not product:
+        return {"error": f"Product '{product_key}' not found. Available: {list(DEMO_PRODUCTS)}"}
+
+    keywords = CATEGORY_KEYWORDS.get(product["category"], {"primary": [], "secondary": [], "backend": []})
+    steps = [{"type": "analyze", "detail": f"Product: {product['name']}, Platform: {platform}, Language: {language}"}]
+    listing = await _generate_with_llm(product, keywords, platform, language)
+    if listing.get("from_llm"):
+        steps.append({"type": "llm_generate", "detail": "Generated via LLM API"})
+    else:
+        listing = _template_listing(product, keywords, platform, language)
+        steps.append({"type": "template_generate", "detail": "Generated via templates"})
+
+    competitors = _mock_competitor_analysis(product["category"])
+    seo = _calculate_seo_score(listing, keywords)
+    steps.extend([
+        {"type": "competitor_analysis", "detail": f"Analyzed {len(competitors)} competitor listings"},
+        {"type": "seo_check", "detail": f"SEO Score: {seo['score']}/100"},
+    ])
+    return {
+        "product": product,
+        "platform": platform,
+        "language": language,
+        "listing": listing,
+        "keywords": keywords,
+        "competitors": competitors,
+        "seo": seo,
+        "steps": steps,
+        "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
+    }
+
+
+def get_product_list() -> list[dict]:
+    return [
+        {"key": key, **{field: value for field, value in product.items() if field != "features"}, "feature_count": len(product["features"])}
+        for key, product in DEMO_PRODUCTS.items()
+    ]

@@ -91,3 +91,76 @@ def extract_order_id(text: str) -> str | None:
         return match.group()
     match = re.search(r"#?(\d{6,})", text)
     return f"ORD-{match.group(1)}" if match else None
+
+
+def _escalation_response(language: str) -> str:
+    ticket = random.randint(10000, 99999)
+    if language == "zh":
+        return f"您的问题已升级至人工客服。专员将在30分钟内与您联系。工单编号：#ESC-{ticket}"
+    return f"Your case has been escalated. A specialist will contact you within 30 minutes. Reference: #ESC-{ticket}"
+
+
+def _order_response(order: dict) -> str:
+    messages = {
+        "processing": "Your order is being prepared and will ship within 1-2 business days.",
+        "in_transit": f"Your order is on the way! Tracking: {order.get('tracking', 'N/A')}. Estimated delivery: {order.get('estimated_delivery', 'N/A')}.",
+        "delivered": f"Your order was delivered on {order.get('delivered_date', 'N/A')}.",
+        "returned": f"Your return has been processed. Refund status: {order.get('refund_status', 'pending')}.",
+    }
+    return messages.get(order["status"], f"Order status: {order['status']}")
+
+
+def _fallback_response(intent: str) -> str:
+    messages = {
+        "pre_sale": "Which product are you considering? I can help with details, sizing, and availability.",
+        "after_sale": "Please provide your order number so I can help with your after-sale request.",
+        "logistics": "Please share your order or tracking number and I'll check the latest status.",
+        "complaint": "I'm sorry about your experience. Please share your order number and details.",
+        "general": "How can I help? I can assist with products, tracking, returns, and other concerns.",
+    }
+    return messages.get(intent, messages["general"])
+
+
+async def handle_customer_message(
+    message: str,
+    conversation_history: list | None = None,
+    platform: str = "tiktok",
+) -> dict:
+    """Run classification, order lookup, retrieval, and response selection."""
+    started_at = time.perf_counter()
+    language = detect_language(message)
+    intent = classify_intent(message)
+    escalated = check_escalation(message)
+    steps = [{"type": "detect", "detail": f"Language: {language}, Intent: {intent}, Escalation: {escalated}"}]
+
+    order_id = extract_order_id(message)
+    order_info = lookup_order(order_id) if order_id else None
+    if order_id:
+        steps.append({"type": "tool_call", "tool": "lookup_order", "input": order_id, "output": order_info})
+
+    kb_results = search_kb(message)
+    steps.append({"type": "kb_search", "results_count": len(kb_results), "top_score": kb_results[0]["score"] if kb_results else 0})
+
+    if escalated:
+        response = _escalation_response(language)
+        steps.append({"type": "escalation", "detail": "Routed to human agent"})
+    elif order_info and order_info["found"]:
+        response = _order_response(order_info)
+    elif kb_results:
+        response = kb_results[0]["answer"]
+        if language == "zh":
+            response += "\n\n[Auto-translate to zh when LLM is connected]"
+    else:
+        response = _fallback_response(intent)
+
+    return {
+        "response": response,
+        "intent": intent,
+        "language": language,
+        "escalated": escalated,
+        "order_info": order_info,
+        "kb_results": kb_results[:2],
+        "steps": steps,
+        "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 2),
+        "platform": platform,
+    }

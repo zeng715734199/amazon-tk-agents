@@ -126,3 +126,32 @@ def generate_restock_plan(product_key: str) -> dict:
         plan["total_cost"] += order["cost"]
     plan["total_cost"] = round(plan["total_cost"], 2)
     return plan
+
+
+def forecast_demand(product_key: str, days: int = 30) -> dict:
+    velocity = SALES_VELOCITY.get(product_key, {})
+    product = INVENTORY.get(product_key, {})
+    if not velocity:
+        return {"error": f"No velocity data for '{product_key}'"}
+    base_date = datetime.now()
+    forecast = []
+    for variant, speeds in velocity.items():
+        stock = product["variants"].get(variant, {})
+        daily = speeds["amazon"] + speeds["tiktok"]
+        running = stock.get("amazon_fba", 0) + stock.get("tiktok_warehouse", 0)
+        stockout_date = None
+        daily_forecast = []
+        for offset in range(days):
+            date = base_date + timedelta(days=offset)
+            multiplier = 1.2 if date.weekday() in (5, 6) else 0.9 if date.weekday() == 1 else 1.0
+            projected_sales = round(daily * multiplier * random.uniform(0.85, 1.15))
+            running = max(0, running - projected_sales)
+            if running == 0 and stockout_date is None:
+                stockout_date = date.strftime("%Y-%m-%d")
+            daily_forecast.append({"date": date.strftime("%Y-%m-%d"), "projected_sales": projected_sales, "projected_stock": running})
+        forecast.append({
+            "variant": variant, "avg_daily_velocity": daily, "current_stock": stock.get("amazon_fba", 0) + stock.get("tiktok_warehouse", 0),
+            "projected_30d_sales": sum(item["projected_sales"] for item in daily_forecast),
+            "stockout_date": stockout_date, "daily_forecast": daily_forecast,
+        })
+    return {"product": product.get("name", product_key), "forecast_days": days, "variants": forecast}

@@ -130,3 +130,27 @@ def _pricing_recommendation(product: dict, competitors: list[dict], analysis: di
     suggested = recommendation["suggested_price"]
     recommendation["projected_margin"] = round((suggested - product["cost"]) / suggested * 100, 1)
     return recommendation
+
+
+async def generate_daily_briefing() -> dict:
+    started_at = time.perf_counter()
+    briefing = {"date": datetime.now().strftime("%Y-%m-%d"), "sections": []}
+    for product_key in OUR_PRODUCTS:
+        overview = await get_market_overview(product_key)
+        if "error" in overview:
+            continue
+        briefing["sections"].append({
+            "product": overview["product"]["name"],
+            "our_price": overview["product"]["price"],
+            "market_avg": overview["price_analysis"]["market_avg"],
+            "alerts": overview["alerts"],
+            "recommendation": overview["recommendation"],
+            "competitors_count": len(overview["competitors"]),
+        })
+    briefing["elapsed_ms"] = round((time.perf_counter() - started_at) * 1000, 2)
+    briefing["summary"] = f"Monitoring {sum(len(items) for items in TRACKED_COMPETITORS.values())} competitors across {len(OUR_PRODUCTS)} categories."
+    return briefing
+
+
+def get_tracked_products() -> list[dict]:
+    return [{"key": key, **product} for key, product in OUR_PRODUCTS.items()]

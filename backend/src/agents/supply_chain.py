@@ -155,3 +155,20 @@ def forecast_demand(product_key: str, days: int = 30) -> dict:
             "stockout_date": stockout_date, "daily_forecast": daily_forecast,
         })
     return {"product": product.get("name", product_key), "forecast_days": days, "variants": forecast}
+
+
+def get_supply_chain_stats() -> dict:
+    overview = get_inventory_overview()
+    total_units = sum(item["totals"]["total"] for item in overview["products"])
+    return {
+        "total_skus": sum(len(item["variants"]) for item in overview["products"]),
+        "total_units": total_units,
+        "total_value": overview["total_inventory_value"],
+        "critical_alerts": sum(alert["severity"] == "critical" for alert in overview["alerts"]),
+        "warning_alerts": sum(alert["severity"] == "warning" for alert in overview["alerts"]),
+        "warehouses": {
+            "amazon_fba": sum(item["totals"]["amazon_fba"] for item in overview["products"]),
+            "tiktok": sum(item["totals"]["tiktok_warehouse"] for item in overview["products"]),
+            "in_transit": sum(item["totals"]["in_transit"] for item in overview["products"]),
+        },
+    }

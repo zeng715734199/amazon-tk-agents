@@ -33,3 +33,27 @@ async def _chat_ollama(
     )
     response.raise_for_status()
     return response.json()["message"]["content"]
+
+
+async def _chat_openai(
+    client: httpx.AsyncClient,
+    messages: Sequence[Message],
+    temperature: float,
+    max_tokens: int,
+) -> str:
+    response = await client.post(
+        f"{LLM_BASE_URL.rstrip('/')}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {LLM_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": LLM_MODEL,
+            "messages": list(messages),
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]

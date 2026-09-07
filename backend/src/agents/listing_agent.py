@@ -78,3 +78,30 @@ def _template_listing(product: dict, keywords: dict, platform: str, language: st
     }
     listing.update({f"bullet{index}": bullets[index - 1] if index <= len(bullets) else "" for index in range(1, 6)})
     return listing
+
+
+async def _generate_with_llm(product: dict, keywords: dict, platform: str, language: str) -> dict:
+    style = "professional and keyword-rich" if platform == "amazon" else "casual, engaging, and emoji-friendly"
+    prompt = f"""Generate an optimized {platform} product listing.
+Product: {product['name']}
+Category: {product['category']}
+Features: {', '.join(product['features'])}
+Price: USD {product['price']}
+Variants: {', '.join(product['variants'])}
+Keywords: {', '.join(keywords['primary'])}
+Style: {style}
+Language: {language}
+
+Return TITLE, BULLET1 through BULLET5, DESCRIPTION, and BACKEND_KEYWORDS."""
+    result = await llm_chat([
+        {"role": "system", "content": f"You are an expert {platform} listing copywriter."},
+        {"role": "user", "content": prompt},
+    ])
+    if "[Demo Mode" in result or "[LLM Error" in result:
+        return {"from_llm": False}
+
+    listing = {"from_llm": True}
+    for field in ["TITLE", "BULLET1", "BULLET2", "BULLET3", "BULLET4", "BULLET5", "DESCRIPTION", "BACKEND_KEYWORDS"]:
+        match = re.search(rf"{field}:\s*(.+?)(?=\r?\n[A-Z0-9_]+:|$)", result, re.DOTALL)
+        listing[field.lower()] = match.group(1).strip() if match else ""
+    return listing

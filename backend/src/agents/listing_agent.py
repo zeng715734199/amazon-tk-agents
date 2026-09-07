@@ -105,3 +105,38 @@ Return TITLE, BULLET1 through BULLET5, DESCRIPTION, and BACKEND_KEYWORDS."""
         match = re.search(rf"{field}:\s*(.+?)(?=\r?\n[A-Z0-9_]+:|$)", result, re.DOTALL)
         listing[field.lower()] = match.group(1).strip() if match else ""
     return listing
+
+
+def _calculate_seo_score(listing: dict, keywords: dict) -> dict:
+    score = 0
+    issues = []
+    title = listing.get("title", "")
+    description = listing.get("description", "")
+    all_text = " ".join([title, description, *[listing.get(f"bullet{i}", "") for i in range(1, 6)]]).lower()
+
+    if 80 <= len(title) <= 200:
+        score += 20
+    else:
+        issues.append(f"Title length ({len(title)} chars) — ideal is 80-200")
+    title_keywords = sum(keyword.lower() in title.lower() for keyword in keywords["primary"])
+    score += min(title_keywords * 10, 20)
+    if not title_keywords:
+        issues.append("No primary keywords found in title")
+    bullets_filled = sum(bool(listing.get(f"bullet{i}")) for i in range(1, 6))
+    score += bullets_filled * 4
+    if bullets_filled < 5:
+        issues.append(f"Only {bullets_filled}/5 bullet points filled")
+    if len(description) >= 150:
+        score += 15
+    else:
+        issues.append("Description too short (aim for 150+ words)")
+    if listing.get("backend_keywords"):
+        score += 15
+    else:
+        issues.append("No backend keywords specified")
+
+    all_keywords = keywords["primary"] + keywords["secondary"]
+    covered = sum(keyword.lower() in all_text for keyword in all_keywords)
+    coverage = round(covered / max(len(all_keywords), 1) * 100)
+    score += min(coverage // 10, 10)
+    return {"score": min(score, 100), "issues": issues, "keyword_coverage": coverage}

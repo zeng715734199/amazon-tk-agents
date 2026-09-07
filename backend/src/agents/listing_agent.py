@@ -140,3 +140,19 @@ def _calculate_seo_score(listing: dict, keywords: dict) -> dict:
     coverage = round(covered / max(len(all_keywords), 1) * 100)
     score += min(coverage // 10, 10)
     return {"score": min(score, 100), "issues": issues, "keyword_coverage": coverage}
+
+
+def _mock_competitor_analysis(category: str) -> list[dict]:
+    category_name = category.split(">")[-1].strip()
+    labels = ["Best Seller", "Top Rated", "Popular Choice"]
+    return [
+        {
+            "rank": rank,
+            "title": f"{label} in {category_name}",
+            "price": round(random.uniform(20, 60), 2),
+            "rating": round(random.uniform(3.8, 4.8), 1),
+            "reviews": random.randint(200, 15000),
+            "bsr": random.randint(100, 5000),
+        }
+        for rank, label in enumerate(labels, 1)
+    ]

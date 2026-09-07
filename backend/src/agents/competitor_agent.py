@@ -102,3 +102,31 @@ async def search_competitor_live(query: str) -> dict:
             return {"results": results}
     except Exception as exc:
         return {"results": [], "error": str(exc)}
+
+
+def _pricing_recommendation(product: dict, competitors: list[dict], analysis: dict) -> dict:
+    cheapest = min(competitors, key=lambda item: item["current_price"])
+    current_margin = round((product["price"] - product["cost"]) / product["price"] * 100, 1)
+    minimum_margin = round((product["min_price"] - product["cost"]) / product["min_price"] * 100, 1)
+    recommendation = {
+        "current_margin": current_margin,
+        "min_margin": minimum_margin,
+        "action": "hold",
+        "suggested_price": product["price"],
+        "reasoning": "Current pricing is competitive.",
+    }
+    if product["price"] > cheapest["current_price"] * 1.3:
+        suggested = round(cheapest["current_price"] * 1.15, 2)
+        if suggested >= product["min_price"]:
+            recommendation.update(action="reduce", suggested_price=suggested, reasoning="Reduce the market price gap while preserving margin.")
+        else:
+            recommendation.update(action="differentiate", reasoning="The margin floor prevents a competitive price reduction.")
+    elif product["price"] < cheapest["current_price"] * 0.9:
+        recommendation.update(
+            action="increase",
+            suggested_price=round(cheapest["current_price"] * 0.95, 2),
+            reasoning="Increase price while remaining below the cheapest competitor.",
+        )
+    suggested = recommendation["suggested_price"]
+    recommendation["projected_margin"] = round((suggested - product["cost"]) / suggested * 100, 1)
+    return recommendation

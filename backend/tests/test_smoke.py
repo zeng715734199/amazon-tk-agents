@@ -84,10 +84,15 @@ class BackendSmokeTest(unittest.TestCase):
         invalid_chat = self.client.post("/api/cs/chat", json={"platform": "amazon"})
         invalid_forecast = self.client.post("/api/supply/forecast", json={"product_key": "earbuds", "days": 0})
         empty_search = self.client.post("/api/competitor/search", json={"query": ""})
+        invalid_promotion = self.client.post(
+            "/api/content/live",
+            json={"product_name": "Demo", "features": ["Fast"], "price": 10, "promo_price": 12},
+        )
         self.assertEqual(invalid_listing.status_code, 422)
         self.assertEqual(invalid_chat.status_code, 422)
         self.assertEqual(invalid_forecast.status_code, 422)
         self.assertEqual(empty_search.status_code, 422)
+        self.assertEqual(invalid_promotion.status_code, 422)
 
     def test_unknown_resources(self):
         """验证未知商品返回可读错误而不会抛出服务器异常。"""

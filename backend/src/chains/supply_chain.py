@@ -94,6 +94,9 @@ def generate_restock_plan(product_key: str) -> dict:
 
 
 def forecast_demand(product_key: str, days: int = 30) -> dict:
+    """预测指定商品的需求和库存变化。"""
+    if days <= 0:
+        return {"error": "Forecast days must be greater than zero"}
     velocity = SALES_VELOCITY.get(product_key, {})
     product = INVENTORY.get(product_key, {})
     if not velocity:

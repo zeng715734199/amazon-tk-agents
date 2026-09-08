@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class ChatRequest(BaseModel):
@@ -37,6 +37,13 @@ class LiveRequest(BaseModel):
     features: list[str] = Field(default_factory=list)
     price: float = Field(gt=0)
     promo_price: Optional[float] = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def validate_promotion_price(self):
+        """确保促销价不高于原价。"""
+        if self.promo_price is not None and self.promo_price > self.price:
+            raise ValueError("促销价不能高于原价")
+        return self
 
 
 class CompetitorRequest(BaseModel):

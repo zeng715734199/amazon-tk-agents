@@ -66,6 +66,13 @@ class BackendSmokeTest(unittest.TestCase):
         missing = self.client.get("/api/cs/orders/UNKNOWN")
         self.assertEqual(missing.status_code, 404)
 
+    def test_request_validation(self):
+        """验证无效请求会返回清晰的校验错误。"""
+        invalid_listing = self.client.post("/api/listing/generate", json={})
+        invalid_chat = self.client.post("/api/cs/chat", json={"platform": "amazon"})
+        self.assertEqual(invalid_listing.status_code, 422)
+        self.assertEqual(invalid_chat.status_code, 422)
+
 
 if __name__ == "__main__":
     unittest.main()

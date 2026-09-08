@@ -1,7 +1,11 @@
-# AgentHub 后端运行依赖（Python 3.10+）
+# AgentHub 后端运行依赖（Python 3.10+）。
+# Web 框架与开发服务器。
 fastapi>=0.100,<1
 uvicorn[standard]>=0.20,<1
+# 异步外部服务调用。
 httpx>=0.24,<1
+# 客服知识库检索与数值计算。
 scikit-learn>=1.2,<2
 numpy>=1.23,<3
+# 接口请求数据校验。
 pydantic>=2,<3

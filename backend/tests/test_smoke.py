@@ -66,6 +66,18 @@ class BackendSmokeTest(unittest.TestCase):
         missing = self.client.get("/api/cs/orders/UNKNOWN")
         self.assertEqual(missing.status_code, 404)
 
+    def test_route_registry(self):
+        """验证应用公开的业务路由清单完整。"""
+        paths = set(self.client.get("/openapi.json").json()["paths"])
+        expected = {
+            "/api/status", "/api/dashboard", "/api/cs/chat", "/api/cs/stats",
+            "/api/cs/orders/{order_id}", "/api/listing/generate", "/api/listing/products",
+            "/api/content/script", "/api/content/live", "/api/content/calendar", "/api/content/formats",
+            "/api/competitor/overview", "/api/competitor/briefing", "/api/competitor/search", "/api/competitor/products",
+            "/api/supply/overview", "/api/supply/restock", "/api/supply/forecast", "/api/supply/stats",
+        }
+        self.assertEqual(paths, expected)
+
     def test_request_validation(self):
         """验证无效请求会返回清晰的校验错误。"""
         invalid_listing = self.client.post("/api/listing/generate", json={})

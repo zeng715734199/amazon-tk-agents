@@ -6,6 +6,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 from server import app
+from config import get_connection_status
 from src.agents import competitor_agent, content_agent, listing_agent
 from src.chains import supply_chain
 from src.services import customer_service
@@ -27,6 +28,15 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertEqual(len(content_agent.get_format_list()), 4)
         self.assertEqual(len(competitor_agent.get_tracked_products()), 3)
         self.assertEqual(len(supply_chain.get_inventory_overview()["products"]), 3)
+
+    def test_default_connection_status(self):
+        """验证未配置外部服务时状态结构完整。"""
+        status = get_connection_status()
+        self.assertEqual(
+            set(status),
+            {"llm", "amazon", "tiktok", "serper", "erp", "webhook"},
+        )
+        self.assertTrue(all(isinstance(value, bool) for value in status.values()))
 
     def test_async_domain_functions(self):
         """验证异步生成流程能够运行。"""

@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routers import competitor_router, content_router, customer_router, listing_router, platform_router, supply_router
+from src.routers.registry import register_routers
 
 
 def create_app() -> FastAPI:
@@ -19,12 +19,7 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-app.include_router(listing_router.router)
-app.include_router(content_router.router)
-app.include_router(competitor_router.router)
-app.include_router(supply_router.router)
-app.include_router(customer_router.router)
-app.include_router(platform_router.router)
+register_routers(app)
 
 
 if __name__ == "__main__":

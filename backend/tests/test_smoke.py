@@ -70,8 +70,24 @@ class BackendSmokeTest(unittest.TestCase):
         """验证无效请求会返回清晰的校验错误。"""
         invalid_listing = self.client.post("/api/listing/generate", json={})
         invalid_chat = self.client.post("/api/cs/chat", json={"platform": "amazon"})
+        invalid_forecast = self.client.post("/api/supply/forecast", json={"product_key": "earbuds", "days": 0})
+        empty_search = self.client.post("/api/competitor/search", json={"query": ""})
         self.assertEqual(invalid_listing.status_code, 422)
         self.assertEqual(invalid_chat.status_code, 422)
+        self.assertEqual(invalid_forecast.status_code, 422)
+        self.assertEqual(empty_search.status_code, 422)
+
+    def test_unknown_resources(self):
+        """验证未知商品返回可读错误而不会抛出服务器异常。"""
+        listing = self.client.post("/api/listing/generate", json={"product_key": "missing"})
+        competitor = self.client.post("/api/competitor/overview", json={"product_key": "missing"})
+        restock = self.client.post("/api/supply/restock", json={"product_key": "missing"})
+        self.assertEqual(listing.status_code, 200)
+        self.assertIn("error", listing.json())
+        self.assertEqual(competitor.status_code, 200)
+        self.assertIn("error", competitor.json())
+        self.assertEqual(restock.status_code, 200)
+        self.assertIn("error", restock.json())
 
 
 if __name__ == "__main__":

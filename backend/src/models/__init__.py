@@ -11,6 +11,17 @@ from .requests import (
     SearchRequest,
 )
 
+RequestModel = (
+    ChatRequest
+    | CompetitorRequest
+    | ForecastRequest
+    | LiveRequest
+    | ListingRequest
+    | RestockRequest
+    | ScriptRequest
+    | SearchRequest
+)
+
 __all__ = [
     "ChatRequest",
     "CompetitorRequest",
@@ -20,4 +31,5 @@ __all__ = [
     "RestockRequest",
     "ScriptRequest",
     "SearchRequest",
+    "RequestModel",
 ]

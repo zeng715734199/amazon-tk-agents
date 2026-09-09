@@ -9,6 +9,12 @@ TRENDING_TOPICS = [
     {"topic": "POV: When your order arrives", "views": "1.2B", "growth": "+42%", "relevance": "high", "format": "skit"},
 ]
 
+CALENDAR_PRODUCTS = [
+    {"name": "ProSound X1 Earbuds", "features": ["ANC", "40h battery"]},
+    {"name": "ZenFlex Yoga Mat", "features": ["Non-slip", "6mm thick"]},
+    {"name": "LumiPro Desk Lamp", "features": ["5 color temps", "USB-C"]},
+]
+
 HASHTAG_DB = {
     "general": ["#fyp", "#foryou", "#foryoupage", "#viral", "#trending"],
     "shopping": ["#TikTokMadeMeBuyIt", "#TikTokShop", "#TikTokFinds", "#OnlineShopping", "#ShopWithMe"],

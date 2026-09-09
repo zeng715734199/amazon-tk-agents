@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from src.agents import content_agent
+from src.mock.content_mock import CALENDAR_PRODUCTS
 from src.models import LiveRequest, ScriptRequest
 
 router = APIRouter(prefix="/api/content", tags=["内容"])
@@ -33,7 +34,7 @@ async def generate_live_script(request: LiveRequest) -> dict:
 @router.get("/calendar")
 async def content_calendar() -> dict:
     """生成七天内容排期。"""
-    return await content_agent.generate_content_calendar([])
+    return await content_agent.generate_content_calendar(CALENDAR_PRODUCTS, 7)
 
 
 @router.get("/formats")

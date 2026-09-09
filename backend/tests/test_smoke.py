@@ -89,6 +89,18 @@ class BackendSmokeTest(unittest.TestCase):
         }
         self.assertEqual(paths, expected)
 
+    def test_content_calendar_products(self):
+        """验证内容日历使用预置商品并保持七天周期。"""
+        response = self.client.get("/api/content/calendar")
+        payload = response.json()
+        products = [item["product"] for item in payload["calendar"]]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(payload["total_days"], 7)
+        self.assertEqual(
+            products[:3],
+            ["ProSound X1 Earbuds", "ZenFlex Yoga Mat", "LumiPro Desk Lamp"],
+        )
+
     def test_request_validation(self):
         """验证无效请求会返回清晰的校验错误。"""
         invalid_listing = self.client.post("/api/listing/generate", json={})

@@ -1,6 +1,7 @@
 """基于环境变量的后端配置。"""
 
 import os
+from pathlib import Path
 
 
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").strip().lower()
@@ -28,6 +29,9 @@ SERPER_API_KEY = os.getenv("SERPER_API_KEY", "")
 ERP_API_URL = os.getenv("ERP_API_URL", "")
 ERP_API_KEY = os.getenv("ERP_API_KEY", "")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")
+FRONTEND_DIST_DIR = Path(
+    os.getenv("FRONTEND_DIST_DIR", Path(__file__).resolve().parent / "output")
+).resolve()
 
 
 def get_connection_status() -> dict[str, bool]:

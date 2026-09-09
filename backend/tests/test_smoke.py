@@ -1,11 +1,13 @@
 """后端核心流程冒烟测试。"""
 
 import asyncio
+import tempfile
 import unittest
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from server import app
+from server import app, create_app
 from config import get_connection_status
 from llm import llm_chat
 from src.agents import competitor_agent, content_agent, listing_agent
@@ -145,6 +147,14 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertEqual(document.status_code, 200)
         self.assertEqual(schema["info"]["title"], "E-Commerce Agent Platform")
         self.assertEqual(schema["info"]["version"], "1.0.0")
+
+    def test_frontend_static_files(self):
+        """验证前端产物可挂载且不会遮蔽业务接口。"""
+        with tempfile.TemporaryDirectory() as directory:
+            Path(directory, "index.html").write_text("<h1>AgentHub</h1>", encoding="utf-8")
+            client = TestClient(create_app(directory))
+            self.assertIn("AgentHub", client.get("/").text)
+            self.assertEqual(client.get("/api/status").status_code, 200)
 
     def test_content_calendar_products(self):
         """验证内容日历使用预置商品并保持七天周期。"""

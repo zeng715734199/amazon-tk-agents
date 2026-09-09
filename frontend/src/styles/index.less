@@ -1,0 +1,291 @@
+@page-background: #f5f5f5;
+@surface: #ffffff;
+@border: #f0f0f0;
+@text-secondary: rgba(0, 0, 0, 0.45);
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: @page-background;
+  overflow-x: hidden;
+}
+
+.app-layout {
+  position: relative;
+  min-height: 100vh;
+}
+
+.shell-main {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-left: 220px;
+  transition: margin-left 0.2s;
+}
+
+.app-layout.is-collapsed .shell-main {
+  margin-left: 72px;
+}
+
+.app-layout > .shell-sider {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid @border;
+  transition: width 0.2s;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 20px;
+  overflow: hidden;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 8px;
+  background: #1677ff;
+  place-items: center;
+}
+
+.shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 64px;
+  padding: 0 24px;
+  line-height: normal;
+  background: @surface !important;
+  border-bottom: 1px solid @border;
+}
+
+.header-title {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+
+  span {
+    color: @text-secondary;
+    font-size: 12px;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  gap: 8px;
+}
+
+.command-box {
+  width: 260px;
+}
+
+.header-clock {
+  min-width: 64px;
+  color: @text-secondary;
+  font-variant-numeric: tabular-nums;
+}
+
+.shell-content {
+  min-width: 0;
+  padding: 15px;
+  background: @page-background;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: end;
+  gap: 16px;
+  margin-bottom: 15px !important;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: @text-secondary;
+  }
+}
+
+.section-gap {
+  margin-top: 16px;
+}
+
+.metric-caption,
+.form-hint,
+.chat-meta-line {
+  color: @text-secondary;
+  font-size: 12px;
+}
+
+.form-hint {
+  margin-left: 12px;
+}
+
+.base-chart {
+  width: 100%;
+  min-width: 0;
+}
+
+.chat-list {
+  height: 440px;
+  margin-bottom: 16px;
+  padding: 4px;
+  overflow-y: auto;
+}
+
+.chat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+
+  &.customer {
+    flex-direction: row-reverse;
+
+    .chat-bubble {
+      background: #e6f4ff;
+    }
+  }
+}
+
+.chat-bubble {
+  max-width: min(72%, 620px);
+  padding: 10px 14px;
+  line-height: 1.7;
+  border-radius: 8px;
+  background: @page-background;
+  white-space: pre-wrap;
+}
+
+.chat-meta-line {
+  margin-bottom: 3px;
+}
+
+.quick-replies,
+.card-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 20px !important;
+}
+
+.script-content {
+  max-height: 520px;
+  margin-top: 20px;
+  overflow: auto;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.inner-table {
+  margin-top: 16px;
+}
+
+.negative-value {
+  color: #cf1322;
+}
+
+.strong-value {
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .header-title span,
+  .header-clock,
+  .header-actions > span:first-child {
+    display: none;
+  }
+
+  .command-box {
+    width: 210px;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell-header {
+    height: auto;
+    min-height: 64px;
+    padding: 10px 16px;
+  }
+
+  .header-title {
+    display: none;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .command-box {
+    flex: 1 1 180px;
+    width: auto;
+  }
+
+  .shell-content {
+    padding: 16px;
+  }
+
+  .shell-main,
+  .app-layout.is-collapsed .shell-main {
+    margin-left: 72px;
+  }
+
+  .page-heading {
+    flex-direction: column;
+  }
+
+  .page-heading h1 {
+    font-size: 21px;
+  }
+}
+
+@media print {
+  .shell-sider,
+  .shell-header,
+  .page-heading > :last-child {
+    display: none;
+  }
+
+  .shell-content {
+    padding: 0;
+    background: #fff;
+  }
+}

@@ -1,6 +1,6 @@
 """客服业务路由。"""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from src.models import ChatRequest
 from src.services import customer_service
@@ -27,7 +27,4 @@ def customer_stats() -> dict:
 @router.get("/orders/{order_id}")
 def customer_order(order_id: str) -> dict:
     """查询演示订单。"""
-    result = customer_service.lookup_order(order_id)
-    if not result["found"]:
-        raise HTTPException(status_code=404, detail=result["message"])
-    return result
+    return customer_service.lookup_order(order_id)

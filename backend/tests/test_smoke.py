@@ -74,7 +74,8 @@ class BackendSmokeTest(unittest.TestCase):
             self.assertEqual(response.status_code, expected_status, path)
 
         missing = self.client.get("/api/cs/orders/UNKNOWN")
-        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(missing.status_code, 200)
+        self.assertFalse(missing.json()["found"])
 
     def test_route_registry(self):
         """验证应用公开的业务路由清单完整。"""

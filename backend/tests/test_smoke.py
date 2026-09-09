@@ -47,6 +47,15 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertIn("script", script)
         self.assertIn("price_analysis", overview)
 
+    def test_customer_workflows(self):
+        """验证客服语言识别、升级和订单分流。"""
+        escalated = asyncio.run(customer_service.handle_customer_message("我要投诉这个订单，联系律师"))
+        order = asyncio.run(customer_service.handle_customer_message("where is ORD-20250305-002?"))
+        self.assertEqual(escalated["language"], "zh")
+        self.assertTrue(escalated["escalated"])
+        self.assertTrue(order["order_info"]["found"])
+        self.assertEqual(order["order_info"]["status"], "in_transit")
+
     def test_api_routes(self):
         """验证主要接口的状态码和关键字段。"""
         checks = [

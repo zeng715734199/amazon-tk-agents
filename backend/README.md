@@ -33,6 +33,8 @@ python -m uvicorn server:app --host 0.0.0.0 --port 8081
 
 内容日历使用三条预置商品生成七天排期。查询不存在的订单时，接口仍返回 `200`，响应中的 `found` 为 `false` 并包含说明信息，便于前端直接展示查询结果。
 
+若需要由后端托管前端构建产物，请将包含 `index.html` 的目录配置到 `FRONTEND_DIST_DIR`。默认读取后端目录下的 `output`；目录不存在时应用仅提供 API，不会创建额外目录。
+
 ## 主要接口
 
 | 模块 | 接口 |
@@ -50,3 +52,5 @@ python -m uvicorn server:app --host 0.0.0.0 --port 8081
 python -m unittest tests.test_smoke -v
 python -m compileall -q .
 ```
+
+当前冒烟测试覆盖 15 条领域、接口和静态资源验证用例。

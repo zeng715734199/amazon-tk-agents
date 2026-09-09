@@ -78,6 +78,17 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertIn(recommendation["action"], {"hold", "reduce", "increase", "differentiate"})
         self.assertGreaterEqual(recommendation["projected_margin"], 0)
 
+    def test_supply_chain_calculations(self):
+        """验证库存、补货和预测结果的数量关系。"""
+        overview = supply_chain.get_inventory_overview()
+        plan = supply_chain.generate_restock_plan("desk_lamp")
+        forecast = supply_chain.forecast_demand("desk_lamp", 5)
+        self.assertEqual(len(overview["products"]), 3)
+        self.assertGreaterEqual(overview["total_inventory_value"], 0)
+        self.assertEqual(plan["total_cost"], round(sum(item["cost"] for item in plan["orders"]), 2))
+        self.assertEqual(forecast["forecast_days"], 5)
+        self.assertTrue(all(len(item["daily_forecast"]) == 5 for item in forecast["variants"]))
+
     def test_api_routes(self):
         """验证主要接口的状态码和关键字段。"""
         checks = [

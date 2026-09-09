@@ -67,6 +67,17 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertLessEqual(result["seo"]["score"], 100)
         self.assertEqual(len(result["competitors"]), 3)
 
+    def test_competitor_pricing_analysis(self):
+        """验证竞品概览和动态定价建议字段完整。"""
+        result = asyncio.run(competitor_agent.get_market_overview("yoga_mat"))
+        analysis = result["price_analysis"]
+        recommendation = result["recommendation"]
+        self.assertEqual(len(result["competitors"]), 2)
+        self.assertLessEqual(analysis["market_min"], analysis["market_avg"])
+        self.assertLessEqual(analysis["market_avg"], analysis["market_max"])
+        self.assertIn(recommendation["action"], {"hold", "reduce", "increase", "differentiate"})
+        self.assertGreaterEqual(recommendation["projected_margin"], 0)
+
     def test_api_routes(self):
         """验证主要接口的状态码和关键字段。"""
         checks = [

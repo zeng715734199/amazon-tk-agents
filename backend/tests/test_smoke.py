@@ -56,6 +56,17 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertTrue(order["order_info"]["found"])
         self.assertEqual(order["order_info"]["status"], "in_transit")
 
+    def test_listing_output_quality(self):
+        """验证 Listing 结果包含完整文案和评分信息。"""
+        result = asyncio.run(listing_agent.generate_listing("earbuds", "amazon"))
+        listing = result["listing"]
+        self.assertFalse(listing["from_llm"])
+        self.assertTrue(listing["title"])
+        self.assertTrue(all(listing[f"bullet{index}"] for index in range(1, 6)))
+        self.assertGreaterEqual(result["seo"]["keyword_coverage"], 0)
+        self.assertLessEqual(result["seo"]["score"], 100)
+        self.assertEqual(len(result["competitors"]), 3)
+
     def test_api_routes(self):
         """验证主要接口的状态码和关键字段。"""
         checks = [

@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from server import app
 from config import get_connection_status
+from llm import llm_chat
 from src.agents import competitor_agent, content_agent, listing_agent
 from src.chains import supply_chain
 from src.services import customer_service
@@ -88,6 +89,12 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertEqual(plan["total_cost"], round(sum(item["cost"] for item in plan["orders"]), 2))
         self.assertEqual(forecast["forecast_days"], 5)
         self.assertTrue(all(len(item["daily_forecast"]) == 5 for item in forecast["variants"]))
+
+    def test_llm_demo_fallback(self):
+        """验证未配置模型服务时返回离线演示结果。"""
+        response = asyncio.run(llm_chat([{"role": "user", "content": "测试"}]))
+        self.assertIn("Demo Mode", response)
+        self.assertIn("测试", response)
 
     def test_api_routes(self):
         """验证主要接口的状态码和关键字段。"""

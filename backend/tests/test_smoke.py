@@ -143,7 +143,7 @@ class BackendSmokeTest(unittest.TestCase):
         document = self.client.get("/docs")
         schema = self.client.get("/openapi.json").json()
         self.assertEqual(document.status_code, 200)
-        self.assertEqual(schema["info"]["title"], "跨境电商 Agent 平台")
+        self.assertEqual(schema["info"]["title"], "E-Commerce Agent Platform")
         self.assertEqual(schema["info"]["version"], "1.0.0")
 
     def test_content_calendar_products(self):

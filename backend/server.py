@@ -8,7 +8,7 @@ from src.routers.registry import register_routers
 
 def create_app() -> FastAPI:
     """创建并配置 FastAPI 应用实例。"""
-    application = FastAPI(title="跨境电商 Agent 平台", version="1.0.0")
+    application = FastAPI(title="E-Commerce Agent Platform", version="1.0.0")
     application.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],  # 演示环境允许跨域，生产环境应配置白名单。

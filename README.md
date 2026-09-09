@@ -1,4 +1,4 @@
-# AgentHub 后端
+# TK & Amazon 智能运营系统
 
 跨境电商智能运营后端，基于 FastAPI 提供客服、商品 Listing、TikTok 内容、竞品监控和供应链能力。
 

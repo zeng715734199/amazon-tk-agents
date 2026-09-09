@@ -89,6 +89,14 @@ class BackendSmokeTest(unittest.TestCase):
         }
         self.assertEqual(paths, expected)
 
+    def test_application_documentation(self):
+        """验证应用元信息和接口文档可访问。"""
+        document = self.client.get("/docs")
+        schema = self.client.get("/openapi.json").json()
+        self.assertEqual(document.status_code, 200)
+        self.assertEqual(schema["info"]["title"], "跨境电商 Agent 平台")
+        self.assertEqual(schema["info"]["version"], "1.0.0")
+
     def test_content_calendar_products(self):
         """验证内容日历使用预置商品并保持七天周期。"""
         response = self.client.get("/api/content/calendar")

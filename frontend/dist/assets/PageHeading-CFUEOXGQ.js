@@ -1,0 +1,1 @@
+import{o as t,e as a,c as r,w as s,aw as o,u as n,ab as c,p}from"./ui-vendor-DqjSxg_6.js";const i={class:"page-heading"},_={__name:"PageHeading",props:{title:{type:String,required:!0},description:{type:String,default:""}},setup(l){return(e,d)=>(t(),a("div",i,[e.$slots.extra?(t(),r(n(c),{key:0},{default:s(()=>[o(e.$slots,"extra")]),_:3})):p("",!0)]))}};export{_};

@@ -100,10 +100,10 @@ const stats = ref()
 const loading = ref(false)
 const error = ref('')
 const inventoryFilter = ref('all')
-const restockProduct = ref('earbuds')
+const restockProduct = ref()
 const restockPlan = ref()
 const restockLoading = ref(false)
-const forecastProduct = ref('earbuds')
+const forecastProduct = ref()
 const forecastDays = ref(30)
 const forecast = ref()
 const forecastLoading = ref(false)
@@ -165,6 +165,8 @@ async function loadData() {
   error.value = ''
   try {
     [overview.value, stats.value] = await Promise.all([supplyChainApi.overview(), supplyChainApi.stats()])
+    restockProduct.value ||= overview.value?.products?.[0]?.key
+    forecastProduct.value ||= overview.value?.products?.[0]?.key
   } catch (requestError) {
     error.value = requestError.message
   } finally {

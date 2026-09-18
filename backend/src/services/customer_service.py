@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from src.mock.customer_service_mock import (
+    CUSTOMER_SERVICE_CONFIG,
     DEMO_ORDERS,
     ESCALATION_KEYWORDS,
     INTENT_KEYWORDS,
@@ -18,6 +19,11 @@ from src.mock.customer_service_mock import (
 _kb_texts = [f"{entry['q']} {entry['a']}" for entry in KB_ENTRIES]
 _kb_vectorizer = TfidfVectorizer(ngram_range=(1, 2), stop_words="english")
 _kb_matrix = _kb_vectorizer.fit_transform(_kb_texts)
+
+
+def get_customer_service_config() -> dict:
+    """返回客服页面需要的后端配置。"""
+    return CUSTOMER_SERVICE_CONFIG
 
 
 def detect_language(text: str) -> str:

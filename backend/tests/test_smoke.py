@@ -103,11 +103,15 @@ class BackendSmokeTest(unittest.TestCase):
         checks = [
             ("get", "/api/status", None, 200),
             ("get", "/api/dashboard", None, 200),
+            ("get", "/api/notifications/next", None, 200),
+            ("get", "/api/profit?period=30d", None, 200),
+            ("get", "/api/cs/config", None, 200),
             ("get", "/api/cs/stats", None, 200),
             ("post", "/api/cs/chat", {"message": "where is my order?"}, 200),
             ("get", "/api/listing/products", None, 200),
             ("post", "/api/listing/generate", {"product_key": "earbuds"}, 200),
             ("get", "/api/content/formats", None, 200),
+            ("get", "/api/content/config", None, 200),
             ("post", "/api/content/script", {"product_name": "Demo", "features": ["Fast"]}, 200),
             ("post", "/api/content/live", {"product_name": "Demo", "features": ["Fast"], "price": 10}, 200),
             ("get", "/api/content/calendar", None, 200),
@@ -132,9 +136,9 @@ class BackendSmokeTest(unittest.TestCase):
         """验证应用公开的业务路由清单完整。"""
         paths = set(self.client.get("/openapi.json").json()["paths"])
         expected = {
-            "/api/status", "/api/dashboard", "/api/cs/chat", "/api/cs/stats",
+            "/api/status", "/api/dashboard", "/api/notifications/next", "/api/profit", "/api/cs/config", "/api/cs/chat", "/api/cs/stats",
             "/api/cs/orders/{order_id}", "/api/listing/generate", "/api/listing/products",
-            "/api/content/script", "/api/content/live", "/api/content/calendar", "/api/content/formats",
+            "/api/content/config", "/api/content/script", "/api/content/live", "/api/content/calendar", "/api/content/formats",
             "/api/competitor/overview", "/api/competitor/briefing", "/api/competitor/search", "/api/competitor/products",
             "/api/supply/overview", "/api/supply/restock", "/api/supply/forecast", "/api/supply/stats",
         }
@@ -147,6 +151,34 @@ class BackendSmokeTest(unittest.TestCase):
         self.assertEqual(document.status_code, 200)
         self.assertEqual(schema["info"]["title"], "E-Commerce Agent Platform")
         self.assertEqual(schema["info"]["version"], "1.0.0")
+
+    def test_notification_payload(self):
+        """验证通知内容和调度时间均由后端提供。"""
+        payload = self.client.get("/api/notifications/next").json()
+        self.assertEqual(
+            set(payload),
+            {"type", "icon", "title", "message", "delay_ms"},
+        )
+        self.assertTrue(payload["title"])
+        self.assertTrue(payload["message"])
+        self.assertGreaterEqual(payload["delay_ms"], 8_000)
+        self.assertLessEqual(payload["delay_ms"], 12_000)
+
+    def test_frontend_business_data_endpoints(self):
+        """验证前端初始内容和图表业务数据均可由接口获取。"""
+        dashboard = self.client.get("/api/dashboard").json()
+        customer_config = self.client.get("/api/cs/config").json()
+        content_config = self.client.get("/api/content/config").json()
+        profit = self.client.get("/api/profit", params={"period": "90d"}).json()
+        self.assertEqual(len(dashboard["sales_trend"]), 7)
+        self.assertTrue(customer_config["welcome_message"])
+        self.assertTrue(customer_config["quick_replies"])
+        self.assertTrue(content_config["defaults"]["product_name"])
+        self.assertTrue(content_config["trending_hashtags"])
+        self.assertEqual(profit["period"], "90d")
+        self.assertEqual(len(profit["trend"]), 12)
+        self.assertEqual(len(profit["pnl_rows"]), 7)
+        self.assertEqual(self.client.get("/api/profit", params={"period": "invalid"}).status_code, 422)
 
     def test_frontend_static_files(self):
         """验证前端产物可挂载且不会遮蔽业务接口。"""

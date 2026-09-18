@@ -5,7 +5,8 @@ from fastapi import APIRouter
 from config import LLM_MODEL, LLM_PROVIDER, get_connection_status
 from src.agents import competitor_agent
 from src.chains import supply_chain
-from src.services import customer_service
+from src.mock.platform_mock import DASHBOARD_SALES_TREND
+from src.services import customer_service, notification_service
 
 router = APIRouter(prefix="/api", tags=["平台"])
 
@@ -37,4 +38,11 @@ async def dashboard() -> dict:
         "inventory_alerts": inventory["alerts"][:5],
         "competitor_briefing": briefing,
         "connections": get_connection_status(),
+        "sales_trend": DASHBOARD_SALES_TREND,
     }
+
+
+@router.get("/notifications/next")
+def next_notification() -> dict:
+    """返回由后端生成的下一条运营通知。"""
+    return notification_service.get_next_notification()

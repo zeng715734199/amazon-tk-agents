@@ -88,7 +88,7 @@ import { competitorApi } from '@/services/api'
 import { formatCurrency, formatNumber, statusText } from '@/utils/format'
 
 const products = ref([])
-const selectedProduct = ref('earbuds')
+const selectedProduct = ref()
 const overview = ref()
 const loading = ref(false)
 const error = ref('')
@@ -159,8 +159,8 @@ async function searchCompetitor() {
 onMounted(async () => {
   try {
     products.value = await competitorApi.products()
-    selectedProduct.value = products.value[0]?.key || 'earbuds'
-    await loadOverview()
+    selectedProduct.value = products.value[0]?.key
+    if (selectedProduct.value) await loadOverview()
   } catch (requestError) {
     error.value = requestError.message
   }

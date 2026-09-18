@@ -3,10 +3,33 @@
 from fastapi import APIRouter
 
 from src.agents import content_agent
-from src.mock.content_mock import CALENDAR_PRODUCTS
+from src.mock.content_mock import CALENDAR_PRODUCTS, HASHTAG_DB
 from src.models import LiveRequest, ScriptRequest
 
 router = APIRouter(prefix="/api/content", tags=["内容"])
+
+
+@router.get("/config")
+def content_config() -> dict:
+    """返回内容生成器的后端默认数据和热门标签。"""
+    product = CALENDAR_PRODUCTS[0]
+    return {
+        "defaults": {
+            "product_name": product["name"],
+            "features": product["features"],
+            "format_type": "unboxing",
+            "language": "zh",
+            "price": 39.99,
+            "promo_price": 29.99,
+        },
+        "trending_hashtags": [
+            HASHTAG_DB["shopping"][0],
+            "#Unboxing",
+            "#ProductReview",
+            "#LifeHack",
+            HASHTAG_DB["shopping"][1],
+        ],
+    }
 
 
 @router.post("/script")

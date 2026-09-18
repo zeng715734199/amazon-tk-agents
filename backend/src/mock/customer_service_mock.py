@@ -1,5 +1,15 @@
 """客服知识库、意图规则与订单演示数据。"""
 
+CUSTOMER_SERVICE_CONFIG = {
+    "welcome_message": "您好，我是 AgentHub 智能客服。请选择快捷问题或直接输入消息。",
+    "quick_replies": [
+        "我的订单 ORD-20250305-002 到哪了？",
+        "收到的商品有损坏，我想退货",
+        "有哪些尺码可选？",
+        "你们支持批发价格吗？",
+    ],
+}
+
 INTENT_KEYWORDS = {
     "pre_sale": ["price", "size", "color", "available", "stock", "discount", "coupon", "how much", "difference", "recommend", "material", "什么", "多少", "颜色", "尺码", "有货"],
     "after_sale": ["return", "refund", "exchange", "cancel", "warranty", "repair", "退货", "退款", "换货", "取消"],

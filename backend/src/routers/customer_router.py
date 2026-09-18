@@ -8,6 +8,12 @@ from src.services import customer_service
 router = APIRouter(prefix="/api/cs", tags=["客服"])
 
 
+@router.get("/config")
+def customer_config() -> dict:
+    """返回客服欢迎语和快捷问题。"""
+    return customer_service.get_customer_service_config()
+
+
 @router.post("/chat")
 async def customer_chat(request: ChatRequest) -> dict:
     """处理客服消息并返回可解释结果。"""

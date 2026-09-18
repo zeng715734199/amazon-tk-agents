@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from . import competitor_router, content_router, customer_router, listing_router, platform_router, supply_router
+from . import competitor_router, content_router, customer_router, listing_router, platform_router, profit_router, supply_router
 
 
 def register_routers(application: FastAPI) -> None:
@@ -14,5 +14,6 @@ def register_routers(application: FastAPI) -> None:
         content_router,
         competitor_router,
         supply_router,
+        profit_router,
     ):
         application.include_router(module.router)

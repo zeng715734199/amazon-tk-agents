@@ -4,9 +4,13 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.config.js",
-    "build": "vite build --config vite.config.js",
-    "preview": "vite preview --config vite.config.js"
+    "dev": "node ./node_modules/vite/bin/vite.js --config vite.config.js --mode mock",
+    "dev:mock": "node ./node_modules/vite/bin/vite.js --config vite.config.js --mode mock",
+    "dev:api": "node ./node_modules/vite/bin/vite.js --config vite.config.js --mode api",
+    "build": "node ./node_modules/vite/bin/vite.js build --config vite.config.js --mode mock",
+    "build:mock": "node ./node_modules/vite/bin/vite.js build --config vite.config.js --mode mock",
+    "build:api": "node ./node_modules/vite/bin/vite.js build --config vite.config.js --mode api",
+    "preview": "node ./node_modules/vite/bin/vite.js preview --config vite.config.js"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

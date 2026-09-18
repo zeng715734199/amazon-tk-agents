@@ -100,7 +100,7 @@ import PageHeading from '@/components/PageHeading.vue'
 import { listingApi } from '@/services/api'
 import { formatCurrency } from '@/utils/format'
 
-const form = reactive({ product_key: 'earbuds', platform: 'amazon', language: 'en' })
+const form = reactive({ product_key: undefined, platform: 'amazon', language: 'en' })
 const products = ref([])
 const result = ref()
 const loadingProducts = ref(false)
@@ -141,6 +141,7 @@ onMounted(async () => {
   loadingProducts.value = true
   try {
     products.value = await listingApi.products()
+    form.product_key = products.value[0]?.key
   } catch (error) {
     message.error(error.message)
   } finally {

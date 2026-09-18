@@ -25,7 +25,7 @@
       <a-card title="客服意图分布" :loading="loading"><base-chart :option="intentOption" /></a-card>
     </a-col>
     <a-col :xs="24" :xl="8">
-      <a-card title="近七日销售趋势"><base-chart :option="salesOption" /></a-card>
+      <a-card title="近七日销售趋势" :loading="loading"><base-chart :option="salesOption" /></a-card>
     </a-col>
     <a-col :xs="24" :xl="8">
       <a-card title="仓库库存分布" :loading="loading"><base-chart :option="warehouseOption" /></a-card>
@@ -125,17 +125,20 @@ const warehouseOption = computed(() => {
   }
 })
 
-const salesOption = {
-  tooltip: { trigger: 'axis' },
-  legend: { data: ['Amazon', 'TikTok'] },
-  grid: { left: 48, right: 24, top: 40, bottom: 36 },
-  xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] },
-  yAxis: { type: 'value' },
-  series: [
-    { name: 'Amazon', type: 'line', smooth: true, data: [142, 158, 151, 176, 183, 214, 226] },
-    { name: 'TikTok', type: 'line', smooth: true, data: [96, 108, 121, 118, 143, 177, 189] },
-  ],
-}
+const salesOption = computed(() => {
+  const trend = dashboard.value?.sales_trend || []
+  return {
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['Amazon', 'TikTok'] },
+    grid: { left: 48, right: 24, top: 40, bottom: 36 },
+    xAxis: { type: 'category', data: trend.map(item => item.label) },
+    yAxis: { type: 'value' },
+    series: [
+      { name: 'Amazon', type: 'line', smooth: true, data: trend.map(item => item.amazon) },
+      { name: 'TikTok', type: 'line', smooth: true, data: trend.map(item => item.tiktok) },
+    ],
+  }
+})
 
 async function loadData() {
   loading.value = true

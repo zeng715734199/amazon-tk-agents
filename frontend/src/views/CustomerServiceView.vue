@@ -1,5 +1,5 @@
 <template>
-  <page-heading title="智能客服" description="模拟 TikTok Shop 与 Amazon 的客户咨询处理" />
+  <page-heading title="智能客服" description="处理 TikTok Shop 与 Amazon 的客户咨询" />
 
   <a-row :gutter="[16, 16]">
     <a-col :xs="24" :xl="16">
@@ -94,18 +94,11 @@ const loadingStats = ref(false)
 const stats = ref()
 const lastResult = ref()
 const messageList = ref()
-const messages = ref([
-  { id: 1, role: 'agent', content: '您好，我是 AgentHub 智能客服。请选择快捷问题或直接输入消息。', time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) },
-])
+const messages = ref([])
 
 const platformOptions = [{ label: 'TikTok Shop', value: 'tiktok' }, { label: 'Amazon', value: 'amazon' }]
 const intentNames = { logistics: '物流咨询', pre_sale: '售前咨询', after_sale: '售后服务', complaint: '投诉', general: '一般咨询' }
-const quickReplies = [
-  '我的订单 ORD-20250305-002 到哪了？',
-  '收到的商品有损坏，我想退货',
-  '有哪些尺码可选？',
-  '你们支持批发价格吗？',
-]
+const quickReplies = ref([])
 
 async function scrollToBottom() {
   await nextTick()
@@ -139,7 +132,20 @@ function sendQuickReply(text) {
 onMounted(async () => {
   loadingStats.value = true
   try {
-    stats.value = await customerServiceApi.stats()
+    const [config, statsResult] = await Promise.all([
+      customerServiceApi.config(),
+      customerServiceApi.stats(),
+    ])
+    stats.value = statsResult
+    quickReplies.value = config.quick_replies || []
+    if (config.welcome_message) {
+      messages.value.push({
+        id: Date.now(),
+        role: 'agent',
+        content: config.welcome_message,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      })
+    }
   } catch (error) {
     message.error(error.message)
   } finally {

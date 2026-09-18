@@ -109,27 +109,27 @@ const tourSteps = computed(() => [
   { title: '页面内容', description: '每个模块的数据、表格和图表都在这里展示。', placement: 'rightTop', target: () => contentRef.value?.$el },
 ])
 
-const SIMULATION_EVENTS = [
-  () => ({ icon: '🛒', title: '新订单', message: `${['ProSound X1 耳机', 'ZenFlex 瑜伽垫', 'LumiPro 台灯'][Math.floor(Math.random() * 3)]} — ${['Amazon', 'TikTok Shop'][Math.floor(Math.random() * 2)]}` }),
-  () => ({ icon: '📦', title: '库存预警', message: `${['ZenFlex 瑜伽垫 Teal 款', 'ProSound X1 白色款', 'LumiPro 台灯 黑色款'][Math.floor(Math.random() * 3)]} FBA 库存低于安全线` }),
-  () => ({ icon: '💰', title: '竞品降价', message: ['SoundCore A40 降至 $33.99', 'YogaPro Mat 降至 $24.99', 'BrightDesk LED 降至 $28.99'][Math.floor(Math.random() * 3)] }),
-  () => ({ icon: '⭐', title: '新评论', message: `${['ProSound X1 收到 5 星好评', 'ZenFlex 瑜伽垫 收到 4 星评价', 'LumiPro 台灯 收到 5 星好评'][Math.floor(Math.random() * 3)]}` }),
-]
 let simulationTimer = null
+let simulationActive = true
 
-function scheduleSimulation() {
-  const delay = 8000 + Math.random() * 4000
-  simulationTimer = window.setTimeout(() => {
-    const event = SIMULATION_EVENTS[Math.floor(Math.random() * SIMULATION_EVENTS.length)]()
-    notification.open({
-      message: event.title,
-      description: event.message,
-      icon: () => event.icon,
-      placement: 'bottomRight',
-      duration: 4.5,
-    })
-    scheduleSimulation()
-  }, delay)
+async function scheduleSimulation() {
+  try {
+    const event = await systemApi.nextNotification()
+    if (!simulationActive) return
+    simulationTimer = window.setTimeout(() => {
+      notification.open({
+        message: event.title,
+        description: event.message,
+        icon: () => event.icon,
+        placement: 'bottomRight',
+        duration: 4.5,
+      })
+      scheduleSimulation()
+    }, event.delay_ms)
+  } catch {
+    if (!simulationActive) return
+    simulationTimer = window.setTimeout(scheduleSimulation, 10_000)
+  }
 }
 
 function navigate({ key }) {
@@ -195,6 +195,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  simulationActive = false
   window.clearInterval(clock.timer)
   window.removeEventListener('keydown', onShortcut)
   window.clearTimeout(simulationTimer)

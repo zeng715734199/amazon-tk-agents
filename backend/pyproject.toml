@@ -1,0 +1,19 @@
+[project]
+name = "tk-amazon-agent-backend"
+version = "1.0.0"
+description = "FastAPI backend for the TK and Amazon intelligent operations platform"
+requires-python = "==3.11.*"
+dependencies = [
+    "fastapi==0.141.1",
+    "httpx==0.28.1",
+    "numpy==2.4.6",
+    "pydantic==2.13.4",
+    "scikit-learn==1.9.0",
+    "uvicorn[standard]==0.52.4",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false

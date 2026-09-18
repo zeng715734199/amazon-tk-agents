@@ -22,11 +22,7 @@
 
       <a-card title="热门内容方向" class="section-gap">
         <a-space wrap>
-          <a-tag color="blue">#TikTokMadeMeBuyIt</a-tag>
-          <a-tag color="cyan">#Unboxing</a-tag>
-          <a-tag color="purple">#ProductReview</a-tag>
-          <a-tag color="green">#LifeHack</a-tag>
-          <a-tag color="orange">#TikTokShop</a-tag>
+          <a-tag v-for="tag in trendingHashtags" :key="tag" color="blue">{{ tag }}</a-tag>
         </a-space>
       </a-card>
     </a-col>
@@ -79,15 +75,16 @@ import PageHeading from '@/components/PageHeading.vue'
 import { contentApi } from '@/services/api'
 
 const form = reactive({
-  product_name: 'ProSound X1 Earbuds',
-  features: '主动降噪, 40 小时续航, IPX5 防水',
-  format_type: 'unboxing',
+  product_name: '',
+  features: '',
+  format_type: undefined,
   language: 'zh',
-  price: 39.99,
-  promo_price: 29.99,
+  price: undefined,
+  promo_price: undefined,
 })
 const formatOptions = ref([])
 const calendar = ref([])
+const trendingHashtags = ref([])
 const loading = ref(false)
 const generating = ref('')
 const resultType = ref('')
@@ -146,9 +143,18 @@ async function generateLive() {
 onMounted(async () => {
   loading.value = true
   try {
-    const [formats, calendarResult] = await Promise.all([contentApi.formats(), contentApi.calendar()])
+    const [config, formats, calendarResult] = await Promise.all([
+      contentApi.config(),
+      contentApi.formats(),
+      contentApi.calendar(),
+    ])
     formatOptions.value = formats.map(item => ({ label: `${item.name}（${item.duration}）`, value: item.key }))
     calendar.value = calendarResult.calendar || []
+    trendingHashtags.value = config.trending_hashtags || []
+    Object.assign(form, {
+      ...config.defaults,
+      features: (config.defaults?.features || []).join(', '),
+    })
   } catch (error) {
     message.error(error.message)
   } finally {
